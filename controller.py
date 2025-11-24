@@ -7,6 +7,9 @@ def lower_controller(
     state : ArrayLike, desired : ArrayLike, parameters : ArrayLike
 ) -> ArrayLike:
     # [steer angle, velocity]
+    # literally just return max steering velocity and max acceleration
+    # with proper negative signs or zeroes (if we don't want to chamge steering angle for example)
+
     assert(desired.shape == (2,))
 
     return np.array([0, 100]).T
@@ -45,6 +48,14 @@ def controller(
     # the current position of the car (x, y in state indices 1 and 0) and the point at maxIndex
 
     # now we want to calculate reference velocity
-    # we want to reach highest velocity such that we can slow down at index j
+    # we want to reach highest velocity such that we can slow down to 0 at maxIndex
+    # so do the following steps:
+        # 1. identify how long before maxIndex point (distance) must we start slowing down at
+        # max deceleration to reach maxIndex with 0 velocity
+        # 2. if current position is greater than that distance, set desired velocity = max velocity
+        # 3. else: find point of intersection between a line with y-int = current velocity and slope = max acceleration
+            # and a line with slope = max deceleration (negative of max acceleration) and x-intercept = whatever
+            # it should be such that velocity is 0 exactly when we reach the maxIndex point
+
 
     return np.array([0, 100]).T
