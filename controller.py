@@ -35,10 +35,20 @@ class PIDController:
         return P + I + D
     
 
+# create two PID controllers
+DT = 0.01
+steerPIDController = PIDController(kp=1, ki=1, kd=1)
+accelPIDController = PIDController(kp=1, ki=1, kd=1)
+
 def lower_controller(
     state : ArrayLike, desired : ArrayLike, parameters : ArrayLike
 ) -> ArrayLike:
-    pass
+    
+    # Error: R - Y = desired - current heading
+    return np.array([
+        steerPIDController.update(desired[0] - state[2], DT),
+        accelPIDController.update(desired[1] - state[3], DT)
+    ])
 
 def controller(
     state : ArrayLike, parameters : ArrayLike, racetrack : RaceTrack
