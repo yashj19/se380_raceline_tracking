@@ -23,6 +23,7 @@ class Simulator:
         self.car = RaceCar(self.rt.initial_state.T)
 
         self.lap_time_elapsed = 0
+        self.simulation_time = 0
         self.lap_start_time = None
         self.lap_finished = False
         self.lap_started = False
@@ -77,7 +78,7 @@ class Simulator:
 
             self.axis.set_xlim(self.car.state[0] - 200, self.car.state[0] + 200)
             self.axis.set_ylim(self.car.state[1] - 200, self.car.state[1] + 200)
-
+            self.simulation_time += self.car.time_step
             desired = controller(self.car.state, self.car.parameters, self.rt)
             cont = lower_controller(self.car.state, desired, self.car.parameters)
             self.car.update(cont)
@@ -120,9 +121,11 @@ class Simulator:
         if progress > 10.0 and not self.lap_started:
             self.lap_started = True
     
-        if progress <= 1.0 and self.lap_started and not self.lap_finished:
+        if progress <= 10.0 and self.lap_started and not self.lap_finished:
             self.lap_finished = True
             self.lap_time_elapsed = time() - self.lap_start_time
+            print("Simulation time:", self.simulation_time)
+            print("Elapsed time:", self.lap_time_elapsed)
 
         if not self.lap_finished and self.lap_start_time is not None:
             self.lap_time_elapsed = time() - self.lap_start_time
